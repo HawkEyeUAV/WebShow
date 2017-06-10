@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>JQuery Ajax Test</title>
+<script src="./echarts.js" type="text/javascript"></script>
+<script src="http://cdn.static.runoob.com/libs/jquery/1.10.2/jquery.min.js" type="text/javascript"></script>
+</head>
+<body>
+    <h1>历史温度变化图</h1>
+    <hr>
+    <div id="container" style="width: 600px; height: 400px;"></div>
+    <script>
+
+    // 初始化两个数组，盛装从数据库中获取到的数据
+    var updatetime = [], temperature = [];
+    //调用ajax来实现异步的加载数据
+    function getusers() {
+        $.ajax({
+            type: "post",
+            async: false,
+            url: "./chartjsontem_01.php",
+            data: {},
+            dataType: "json",
+            success: function(result){
+                if(result){
+                    for(var i = 0 ; i < result.length; i++){
+                        updatetime.push(result[i].UPDATE);
+                        temperature.push(result[i].TEM);
+                    }
+                }
+            },
+            error: function(errmsg) {
+                alert("Ajax获取服务器数据出错了！"+ errmsg);
+            }
+        });
+    return updatetime,temperature;
+    }
+
+    // 执行异步请求
+    getusers();
+     // 初始化 图表对象
+        var mychart = echarts.init(document.getElementById("container"));
+        // 进行相关项的设置，也就是所谓的搭搭骨架，方便待会的ajax异步的数据填充
+        var option = {
+            title : {
+                text : '温度变化图'
+            },
+            tooltip : {
+                show : true
+            },
+            legend : {
+                data : ['temperature']
+            },
+            xAxis : [ {
+                 axisLabel:{
+                    rotate:45
+                },
+                data : updatetime,
+                name : '时间'
+            
+            } ],
+            yAxis : [ {
+                type : 'value',
+                name : '温度(℃)'
+            }],           
+             series : [ {
+                "name" : "temperature",
+                "type" : "line",
+                "data" : temperature
+            } ]
+
+        };
+         // 将配置项赋给chart对象，来显示相关的数据
+        mychart.setOption(option);
+
+
+
+
+    </script>
+<marquee></marquee>
+
+</body>
+</html>

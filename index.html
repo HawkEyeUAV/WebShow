@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+<style type="text/css">
+body,html{width: 100%;height: 100%;overflow: hidden;margin:0;font-family:"微软雅黑";}
+#allmap {width: 60%;height: 60%; box-shadow:4px 2px 6px #333****33 inset;overflow: hidden; position:absolute;left:20%;bottom:0;text-align: center;font-family:"微软雅黑";}
+#world{
+width:60%;
+height:40%;
+position:absolute;
+left:20%;
+ border-radius: 2px 2px 2px 2px;
+    -webkit-box-shadow: 0 10px 6px -6px #777;
+    -moz-box-shadow: 0 10px 6px -6px #777;
+    box-shadow: 0 10px 6px -6px #777;
+}
+#controlLeft{
+width:20%;
+height:20%;
+position:relative; 
+top:80%;
+}
+.buttonheadl{
+content:;
+width: 60px;
+height: 60px;
+z-index: -1;
+position: relative;
+background: #ffff11;
+left: 3%;
+bottom:50%;
+border-radius: 30px;
+box-shadow: inset 2px 2px 4px rgba(0,0,0,0.4);
+float:left;
+}
+.buttonheadr{
+content: "";
+width: 60px;
+height: 60px;
+z-index: -1;
+position: relative;
+background: #ddd;
+left: 20%;
+bottom:50%;
+border-radius: 30px;
+box-shadow: inset 2px 2px 4px rgba(0,0,0,0.4);
+float:left;
+}
+.buttonthroup{
+content: "";
+width: 60px;
+height: 60px;
+z-index: -1;
+position: relative;
+background: #ddd;
+left: 0%;
+bottom:0%;
+border-radius: 30px;
+box-shadow: inset 2px 2px 4px rgba(0,0,0,0.4);
+float:left;
+}
+.buttonthrodown{
+content: "";
+width: 60px;
+height: 60px;
+z-index: -1;
+position: relative;
+background: #ddd;
+left: 0px;
+bottom:100%;
+border-radius: 30px;
+box-shadow: inset 2px 2px 4px rgba(0,0,0,0.4);
+float:left;
+}
+</style>
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=ZwQAeZO1fncN63zUmuYeGU7CLU0mpfdk"></script>
+<script src="http://cdn.static.runoob.com/libs/jquery/1.10.2/jquery.min.js" type="text/javascript"></script>
+<script src="./echarts.js" type="text/javascript"></script>
+<script src="./world.js" type="text/javascript"></script>
+<title>轨迹动态展示</title>
+</head>
+<body>
+<div id="allmap"></div>
+<div id="world"></div>
+<div id="controlLeft">
+<input type="button" value="Turnleft" class="buttonheadl" onclick="turnleft()">
+<input type="button" value="Turnright" class="buttonheadr" onclick="turnright()">
+<input type="button" value="Up" class="buttonthroup" onclick="up()">
+<input type="button" value="Down" class="buttonthrodown"  onclick="down()">
+
+</div>
+</body>
+</html>
+<script type="text/javascript">
+function left(){
+ $.ajax({             //用ajax来实现不刷新网页的基础上更新数据
+                    type:"post",  //请求方式
+                    url:"/dxuavphp/control_01.php",  //路径
+                    dataType:"json",
+                    data:{
+                        act:"left"  
+                    },
+                    async: false,
+                    success:function(result){
+                        alert(result);
+                      //  window.location = "login.html";  //注册成功就跳转到login.html
+                    }
+                });
+
+}
+function right(){
+ $.ajax({             // ^  ajax ^    ^  ^    ^  ^   ^    ^     ^ ^  ^    ^   ^  ^   ^   ^   ^
+                    type:"post",  //     ^  ^    ^
+                    url:"/dxuavphp/control_01.php",  //     ^
+                    dataType:"json",
+                    data:{
+                        act:"right"
+                    },
+                    async: false,
+                    success:function(result){
+                        alert(result);
+                      //  window.location = "login.html";  //    ^ ^  ^ ^  ^ ^           ^  login.html
+                    }
+                });
+
+}
+function up(){
+ $.ajax({             // ^  ajax ^    ^  ^    ^  ^   ^    ^     ^ ^  ^    ^   ^  ^   ^   ^   ^
+                    type:"post",  //     ^  ^    ^
+                    url:"/dxuavphp/control_01.php",  //     ^
+                    dataType:"json",
+                    data:{
+                        act:"up"
+                    },
+                    async: false,
+                    success:function(result){
+                        alert(result);
+                      //  window.location = "login.html";  //    ^ ^  ^ ^  ^ ^           ^  login.html
+                    }
+                });
+
+}
+function down(){
+ $.ajax({             // ^  ajax ^    ^  ^    ^  ^   ^    ^     ^ ^  ^    ^   ^  ^   ^   ^   ^
+                    type:"post",  //     ^  ^    ^
+                    url:"/dxuavphp/control_01.php",  //     ^
+                    dataType:"json",
+                    data:{
+                        act:"down"
+                    },
+                    async: false,
+                    success:function(result){
+                        alert(result);
+                      //  window.location = "login.html";  //    ^ ^  ^ ^  ^ ^           ^  login.html
+                    }
+                });
+
+}
+
+</script>
+<script type="text/javascript">
+var chart = echarts.init(document.getElementById("world"));
+var data = [
+    
+     //{name: '乳山', value: 18},
+     {name:'泰安',value:200}
+];
+var geoCoordMap = {
+    //'乳山':[121.52,36.89],
+    '泰安':[119.52,33.89]
+    
+};
+
+var convertData = function (data) {
+    var res = [];
+    for (var i = 0; i < data.length; i++) {
+        var geoCoord = geoCoordMap[data[i].name];
+        if (geoCoord) {
+            res.push({
+                name: data[i].name,
+                value: geoCoord.concat(data[i].value)
+            });
+        }
+    }
+    return res;
+};
+
+chart.setOption({
+
+backgroundColor: '#323',
+
+geo: {
+        map: 'world',
+        label: {
+            emphasis: {
+                show: false
+            }
+        },
+        roam: true,
+      //  zoom: 1,
+      //  aspectScale:1.3,
+        itemStyle: {
+            normal: {
+                areaColor: '#555',
+                borderColor: '#aaa'
+            },
+            emphasis: {
+                areaColor: '#2a333d'
+            }
+        }
+ },      
+series:[
+       {
+            name: 'Top 5',
+            type: 'effectScatter',
+            coordinateSystem: 'geo',
+            data: convertData(data),
+            symbolSize: function (val) {
+                return val[2] / 10;
+            },
+            showEffectOn: 'render',
+            rippleEffect: {
+                brushType: 'stroke'
+            },
+            hoverAnimation: true,
+            label: {
+                normal: {
+                    formatter: '{b}',
+                    position: 'right',
+                    show: true
+                }
+            },
+            itemStyle: {
+                normal: {
+                    color: '#f4e925',
+                    shadowBlur: 10,
+                    shadowColor: '#333'
+                }
+            },
+            zlevel: 1
+        }]
+            
+    
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+<script type="text/javascript">
+//数据准备,  
+var points = [];//原始点信息数组  
+var bPoints = [];//百度化坐标数组。用于更新显示范围。  
+//var lng = 117.06;
+//var lat = 36.05;
+var lng_point = [],lat_point = [];
+var Points = [];
+var newLinePoint = [];
+
+//创建标注点并添加到地图中
+
+function getusers() {
+        var lng,lat,arr = []; 
+        $.ajax({
+            type: "post",
+            async: false,
+            url: "./dxuavphp/dxuav.php",
+            data: {},
+            dataType: "json",
+            success: function(result){
+               if(result){
+        
+                        lng = result[0].LNG;
+                        lat = result[0].LAT;
+                        arr[0] = lng;
+                        arr[1] = lat;     
+                }
+            },
+            error: function(errmsg) {
+                alert("Ajax获取服务器数据出错了！"+ errmsg);
+            }
+        });
+    return arr;
+    }
+
+function getusers_point() {
+        var lng,lat,arr = [];
+        $.ajax({
+            type: "post",
+            async: false,
+            url: "./dxuavphp/dxuav.php",
+            data: newLinePoint[0],
+            dataType: "json",
+            success: function(){
+         
+                
+            },
+            error: function(errmsg) {
+                alert("Ajax ^   ^ ^  ^ ^  ^   ^   ^   ^   ^   ^ ^   ^   ^ "+ errmsg);
+            }
+        });
+    
+    }
+
+function addMarker_plane(points) {
+    //循环建立标注点
+    for(var i=0, pointsLen = points.length; i<pointsLen; i++) {
+        var point = new BMap.Point(points[i].lng, points[i].lat); //将标注点转化成地图上的点
+        var marker = new BMap.Marker(point); //将点转化成标注点
+        map.addOverlay(marker);  //将标注点添加到地图上
+        //添加监听事件
+        (function() {
+            var thePoint = points[i];
+            marker.addEventListener("click",
+                function() {
+                showInfo(this,thePoint);
+            });
+         })();  
+    }
+}
+
+//point to fly线  
+function addMarker_point(lngPoint,latPoint){
+      var point = new BMap.Point(lngPoint,latPoint);
+      var marker = new BMap.Marker(point);
+      map.addOverlay(marker);
+
+}
+
+
+
+function addLine(points){  
+
+    var linePoints = [],pointsLen = points.length,i,polyline;  
+    if(pointsLen == 0){  
+        return;  
+    }  
+    // 创建标注对象并添加到地图     
+    for(i = 0;i <pointsLen;i++){  
+        linePoints.push(new BMap.Point(points[i].lng,points[i].lat));  
+    }  
+
+    polyline = new BMap.Polyline(linePoints, {strokeColor:"#FF9900", strokeWeight:5, strokeOpacity:1});   //创建折线  
+    map.addOverlay(polyline);   //增加折线  
+}
+
+
+//addline for point
+function addLine_point(point){
+  var linePoints = [],pointsLen = point.length,i,polyline;  
+    if(pointsLen == 0){  
+        return;  
+    }  
+    // 创建标注对象并添加到地图     
+    for(i = 0;i <pointsLen;i++){  
+        linePoints.push(new BMap.Point(point[i].lng,point[i].lat));  
+    }  
+
+    polyline = new BMap.Polyline(linePoints, {strokeColor:"blue", strokeWeight:1, strokeOpacity:1});   //创建折线  
+   map.addOverlay(polyline);
+}
+
+//随机生成新的点，加入到轨迹中。  
+function dynamicLine(){  
+   // var lng = 112+getRandom(100)*0.01;  
+   // var lat = 26+getRandom(100)*0.01;  
+   // var id = getRandom(1000);
+      var data,lng,lat;  
+      data = getusers();
+      lng = data[0];
+      lat = data[1];
+     // console.log(data[0]);
+    var point = {"lng":lng,"lat":lat}  
+    var makerPoints = [];  
+    var newLinePoints = [];  
+    var len;  
+
+    makerPoints.push(point);              
+    addMarker_plane(makerPoints);//增加对应该的轨迹点  
+    points.push(point);  
+    bPoints.push(new BMap.Point(lng,lat));  
+    len = points.length;  
+    newLinePoints = points.slice(len-2, len);//最后两个点用来画线。  
+
+    addLine(newLinePoints);//增加轨迹线  
+    setZoom(bPoints);  
+   setTimeout(dynamicLine, 1000);  
+}    
+
+//根据点信息实时更新地图显示范围，让轨迹完整显示。设置新的中心点和显示级别  
+function setZoom(bPoints){  
+    var view = map.getViewport(eval(bPoints));  
+    var mapZoom = view.zoom;   
+    var centerPoint = view.center;   
+    map.centerAndZoom(centerPoint,mapZoom);  
+}  
+
+//创建地图
+var map = new BMap.Map("allmap");    
+
+map.centerAndZoom(new BMap.Point(116.404, 39.915), 11);  // 设置中心点
+map.centerAndZoom( "衡阳");
+map.setCurrentCity("衡阳");          //设置为衡阳
+map.addControl(new BMap.MapTypeControl()); //可拖拽  
+map.enableScrollWheelZoom(true);  //滚轮实现方法缩小 
+map.addEventListener("click",function(e){
+        
+        alert(e.point.lng + "," + e.point.lat);
+        lng_point.push(e.point.lng);
+        lat_point.push(e.point.lat);
+        var len = lng_point.length;
+        addMarker_point(lng_point[len-1],lat_point[len-1]);
+        var point_01 = {"lng":e.point.lng,"lat":e.point.lat}
+        Points.push(point_01);
+        var len1 = Points.length;
+        var newLinePoints = [];
+        newLinePoints = Points.slice(len1-2, len1);//最后两个点用来画线。  
+        newLinePoint = Points.slice(len1-1,len1);
+        console.log(newLinePoint[0]);  
+
+        addLine_point(newLinePoints);//增加轨迹线     
+        getusers_point();
+//        console.log(linePoint_lng);  
+    });//point to fly
+
+    dynamicLine();
+
+
+</script>
+
