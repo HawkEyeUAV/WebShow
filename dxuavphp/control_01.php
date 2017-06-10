@@ -8,14 +8,24 @@ $i=$_POST['act'];
 //$fh=fopen('./control.txt', 'a+');
 //fwrite($fh, $i);
 //fclose($fh);
-if ($i==1){
-// echo "open"; 
- shell_exec(" mosquitto_pub -t 'uav_cloud' -m 'print vehicle'");
-//header("refresh:1;url=/var/www/html/e.html");
-//}
-//else 
-echo $i;
+switch($i){
+case "left"; 
+  shell_exec(" mosquitto_pub -t 'uav_cloud' -m 'print vehicle'");
+  break;
+case "right";
+  shell_exec(" mosquitto_pub -t 'uav_cloud' -m 'print vehicle'");
+  break;
+case "up";
+  shell_exec(" mosquitto_pub -t 'uav_cloud' -m 'print vehicle'");
+  break;
+case "down";
+  shell_exec(" mosquitto_pub -t 'uav_cloud' -m 'print vehicle'");
+  break;
+default:
+  echo "no cmd for this";
 }
+
+
 // header("Location:./control_01.html");
 // exit;
 // exit;
